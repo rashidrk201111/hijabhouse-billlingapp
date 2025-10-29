@@ -1,0 +1,17 @@
+runtime: nodejs20
+
+env_variables:
+  NODE_ENV: production
+
+# Only the build output is needed, not the source files
+handlers:
+  - url: /(.*\.(js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))$
+    static_files: dist/\1
+    upload: dist/.*
+    secure: always
+    redirect_http_response_code: 301
+  - url: /(.*)
+    static_files: dist/index.html
+    upload: dist/index.html
+    secure: always
+    redirect_http_response_code: 301
