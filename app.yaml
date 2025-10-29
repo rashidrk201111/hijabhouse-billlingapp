@@ -1,17 +1,38 @@
 runtime: nodejs20
+env: flex
 
+# [START gae_flex_static_files]
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 1
+
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+handlers:
+  # Serve all static files with url ending with a file extension
+  - url: /assets/(.*\.(js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))$
+    static_files: dist/assets/\1
+    upload: dist/assets/.*
+    secure: always
+    redirect_http_response_code: 301
+    http_headers:
+      Access-Control-Allow-Origin: "*"
+      Cache-Control: "public, max-age=31536000"
+
+  # Serve index.html for all other routes to support client-side routing
+  - url: /.*
+    static_files: dist/index.html
+    upload: dist/index\.html
+    secure: always
+    redirect_http_response_code: 301
+    http_headers:
+      Cache-Control: "no-cache, no-store, must-revalidate"
+
+# [END gae_flex_static_files]
+
+# Environment variables
 env_variables:
   NODE_ENV: production
-
-# Only the build output is needed, not the source files
-handlers:
-  - url: /(.*\.(js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))$
-    static_files: dist/\1
-    upload: dist/.*
-    secure: always
-    redirect_http_response_code: 301
-  - url: /(.*)
-    static_files: dist/index.html
-    upload: dist/index.html
-    secure: always
-    redirect_http_response_code: 301
